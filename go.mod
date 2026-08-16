@@ -1,4 +1,4 @@
-module mydocker
+module github.com/suryanshvermaa/mydocker
 
 go 1.25.3
 
