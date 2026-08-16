@@ -35,8 +35,9 @@ func run() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	// creating process
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: unix.CLONE_NEWPID,
+		Cloneflags: unix.CLONE_NEWPID | unix.CLONE_NEWUTS | unix.CLONE_NEWNS,
 	}
 	if err := cmd.Run(); err != nil {
 		fmt.Println("error:", err)
@@ -46,6 +47,22 @@ func run() {
 
 func child() {
 	fmt.Println("running inside container")
+	// set hostname
+	if err :=
+		unix.Sethostname([]byte("mycontainer")); err != nil {
+		panic(err)
+	}
+
+	err := unix.Mount(
+		"proc",
+		"/proc",
+		"proc",
+		0,
+		"",
+	)
+	if err != nil {
+		panic(err)
+	}
 
 	cmd := exec.Command(os.Args[2])
 
